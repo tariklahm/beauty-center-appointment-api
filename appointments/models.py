@@ -9,7 +9,7 @@ class Service(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     duration = models.PositiveIntegerField(help_text="Duration in minutes")
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.DecimalField(max_digits=6, decimal_places=2, help_text="Price in Dirhams")
 
     def __str__(self):
         return self.name
