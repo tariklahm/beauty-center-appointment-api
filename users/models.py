@@ -10,7 +10,7 @@ class User(AbstractUser):
         ('admin', 'Admin'),
     )
 
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='client')
 
     phone = models.CharField(max_length=20, blank=True)
 

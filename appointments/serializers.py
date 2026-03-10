@@ -1,38 +1,41 @@
 from rest_framework import serializers
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 from .models import Service, Appointment
+
+User = get_user_model()
 
 
 # Serializer for Service model
 class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
-        # Return all fields of the Service model
         fields = '__all__'
 
 
 # Serializer for Appointment model
 class AppointmentSerializer(serializers.ModelSerializer):
 
-    # Show the client's username instead of the client ID
-    # The client field will be filled automatically from request.user
+    # Show client's username instead of ID
     client = serializers.ReadOnlyField(source='client.username')
+
+    # Only show users with role "employee"
+    employee = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.filter(role="employee")
+    )
 
     class Meta:
         model = Appointment
-
-        # Fields that will appear in API responses
         fields = [
-            'id',               # Appointment ID
-            'client',           # Username of the client who booked
-            'employee',         # Employee assigned to the appointment
-            'service',          # Service requested
-            'appointment_at',   # Date and time of the appointment
-            'status',           # Appointment status (scheduled, completed, cancelled)
-            'created_at'        # When the appointment was created
+            'id',
+            'client',
+            'employee',
+            'service',
+            'appointment_at',
+            'status',
+            'created_at'
         ]
 
-        # Fields that cannot be modified by the user
         read_only_fields = ['status', 'created_at']
 
     # Validate that the appointment date is in the future
@@ -43,12 +46,11 @@ class AppointmentSerializer(serializers.ModelSerializer):
             )
         return value
 
-    # General validation for the appointment
+    # Prevent double booking
     def validate(self, data):
         employee = data['employee']
         appointment_at = data['appointment_at']
 
-        # Prevent double booking for the same employee at the same time
         if Appointment.objects.filter(
             employee=employee,
             appointment_at=appointment_at

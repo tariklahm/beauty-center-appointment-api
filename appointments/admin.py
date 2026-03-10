@@ -36,3 +36,4 @@ class AppointmentAdmin(admin.ModelAdmin):
 
     # Enable searching appointments by client or employee username
     search_fields = ('client__username', 'employee__username')
+    

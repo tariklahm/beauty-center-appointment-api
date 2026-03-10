@@ -22,4 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('appointments.urls')),
     path('api/', include('users.urls')),
+    # Enable DRF login/logout in the browser
+    path('api-auth/', include('rest_framework.urls')),
 ]
